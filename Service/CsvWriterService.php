@@ -39,12 +39,6 @@ class CsvWriterService {
         $fileName = "{$filename}.csv";
         $filePath =  $exportDir . '/' . $fileName;
     
-        //$data = [];
-          /* pass data array to write in csv file */
-        /* $data[] = [
-            'orderid' => '1000asa1',
-            'epaow' => 'plah plah'
-        ]; */
         $this->_csvProcessor
             ->setEnclosure('"')
             ->setDelimiter("\t")

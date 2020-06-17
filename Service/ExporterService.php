@@ -31,44 +31,80 @@ class ExporterService {
         $this->_orderList = $orderList;
     }
 
-    public function process()
+    protected function getStoreIds($storeIds = false)
     {
-        # code...
-        $orderCollection = $this->_orderList
-            ->getCollection($this->getOrderFilters())
-            ->load();
+        if (!$storeIds)
+            return [];
 
-        $providerParams = [
-            'collection' => $orderCollection,
-            'fields' => $this->_fields,
-            'orderType' => 'I'
-        ];
+        $ids = explode(',', $storeIds);
 
-        $dataArray = $this->_csvDataProvider
-            ->create($providerParams)
-            ->toArray();
-
-        $this->_csvWriterService->write($dataArray);
-        return ['total' => count($dataArray)-1];
+        return $ids;
     }
 
-    public function getOrderFilters()
+    public function process($params)
     {
         # code...
-        // We only want orders created 24 hours from the current time
-        $toTimeStamp = $this->_dateTime->timestamp();
-        //$toTimeStamp = $this->_dateTime->gmtTimestamp('Mar 21, 2020 12:15:34 PM'); // Testing
-        //$fromTimeStamp = strtotime('-24 hours', $toTimeStamp);
-        $fromTimeStamp = strtotime('-6 months', $toTimeStamp);
+        
+        $storeIds = $this->getStoreIds($params['storeIds']);
+        
+        $result = [];
 
-        $from = $this->_dateTime->gmtDate(null, $fromTimeStamp);
-        $to = $this->_dateTime->gmtDate(null, $toTimeStamp);
+        foreach($storeIds as $index => $storeId) {
+            //
+            $filters = $this->getOrderFilters($storeId, $params['range']);
+            
+            $orderCollection = $this->_orderList->getCollection($filters)->load();
+            
+            $providerParams = [
+                'collection' => $orderCollection,
+                'fields' => $this->_fields,
+                'orderType' => 'I'
+            ];
+            $dataArray = $this->_csvDataProvider->create($providerParams)->toArray();
+            
+            $filename = $this->makeFilename($filters, $params['filenames'], $index);
+            $this->_csvWriterService->write($dataArray, $filename);
 
+            $result[] = [
+                'storeId' => $storeId,
+                'total' => count($dataArray) - 1
+            ];
+        }
+
+        return $result;
+    }
+
+    protected function getOrderFilters($storeId, $range)
+    {
+        # code...
+        // Set default range if empty
+        $range = !$range ? '-24 hours' : $range;
+
+        $toDateTime = new \DateTime();
+
+        $fromDateTime = clone $toDateTime;
+        $fromDateTime->modify($range);
+
+        $from = $this->_dateTime->gmtDate(null, $fromDateTime->getTimestamp());
+        $to = $this->_dateTime->gmtDate(null, $toDateTime->getTimestamp());
+        
         $filters = [
-            'created_at' => ['from' => $from, 'to' => $to]
+            'created_at' => ['from' => $from, 'to' => $to],
+            'store_id' => ['eq' => $storeId]
         ];
 
         return $filters;
     }
 
+    public function makeFilename($filters, $filenames, $index)
+    {
+        # code...
+        
+        if (!$filenames) {
+            return "Export-{$filters['store_id']['eq']}-{$filters['created_at']['to']}";
+        }
+
+        $filename = explode(',', $filenames)[$index];
+        return "{$filename}-{$filters['created_at']['to']}";
+    }
 }

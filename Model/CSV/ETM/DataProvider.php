@@ -158,7 +158,7 @@ class DataProvider {
             $item[] = $orderItem->getSku();
             $item[] = $orderItem->getSize();
             $item[] = $orderItem->getQtyOrdered();
-            print_r($item);
+
             $orderItems[] = array_map([$this, 'encodeSpecialCharacters'], $item);
         }
 

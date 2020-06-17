@@ -43,11 +43,5 @@ trait AddressTrait {
         return $this->_addressData->getCity();
     }
 
-    public function getCountry()
-    {
-        # code...
-        $this->willSetAddressData();
-        return $this->_addressData->getCountryId();
-    }
 
 }
