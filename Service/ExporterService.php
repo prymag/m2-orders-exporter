@@ -36,23 +36,28 @@ class ExporterService {
         if (!$storeIds)
             return [];
 
-        $ids = explode(',', $storeIds);
+        return explode(',', $storeIds);
+    }
 
-        return $ids;
+    protected function getFilenames($filenames = false) {
+        //
+        if (!$filenames)
+            return [];
+
+        return explode(',', $filenames);
     }
 
     public function process($params)
     {
         # code...
-        
         $storeIds = $this->getStoreIds($params['storeIds']);
+        $filters = $this->getOrderDateFilters($params['rangeStart']);        
+        $filenames = $this->getFilenames($params['filenames']);
         
         $result = [];
-
         foreach($storeIds as $index => $storeId) {
-            //
-            $filters = $this->getOrderFilters($storeId, $params['range']);
-            
+            // 
+            $filters['store_id'] = ['eq' => $storeId];
             $orderCollection = $this->_orderList->getCollection($filters)->load();
             
             $providerParams = [
@@ -62,7 +67,7 @@ class ExporterService {
             ];
             $dataArray = $this->_csvDataProvider->create($providerParams)->toArray();
             
-            $filename = $this->makeFilename($filters, $params['filenames'], $index);
+            $filename = $this->makeFilename($filters, $filenames, $index);
             $this->_csvWriterService->write($dataArray, $filename);
 
             $result[] = [
@@ -74,37 +79,33 @@ class ExporterService {
         return $result;
     }
 
-    protected function getOrderFilters($storeId, $range)
+    protected function getOrderDateFilters($rangeStart)
     {
         # code...
-        // Set default range if empty
-        $range = !$range ? '-24 hours' : $range;
+        // Set default rangeStart if empty
+        $rangeStart = !$rangeStart ? '-24 hours' : "-" . $rangeStart;
 
         $toDateTime = new \DateTime();
 
         $fromDateTime = clone $toDateTime;
-        $fromDateTime->modify($range);
+        $fromDateTime->modify($rangeStart);
 
         $from = $this->_dateTime->gmtDate(null, $fromDateTime->getTimestamp());
         $to = $this->_dateTime->gmtDate(null, $toDateTime->getTimestamp());
         
-        $filters = [
-            'created_at' => ['from' => $from, 'to' => $to],
-            'store_id' => ['eq' => $storeId]
-        ];
-
-        return $filters;
+        return ['created_at' => ['from' => $from, 'to' => $to]];
     }
 
-    public function makeFilename($filters, $filenames, $index)
+    
+
+    protected function makeFilename($filters, $filenames, $index)
     {
         # code...
         
-        if (!$filenames) {
+        if (!$filenames || !isset($filenames[$index])) {
             return "Export-{$filters['store_id']['eq']}-{$filters['created_at']['to']}";
         }
 
-        $filename = explode(',', $filenames)[$index];
-        return "{$filename}-{$filters['created_at']['to']}";
+        return "{$filenames[$index]}-{$filters['created_at']['to']}";
     }
 }
