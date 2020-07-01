@@ -17,6 +17,7 @@ class Exporter extends Command {
     const KEY_STOREIDS = 'store_ids';
     const KEY_FILENAMES = 'filenames';
     const KEY_RANGESTART = 'range_start';
+    const KEY_DELIMITER = 'delimiter';
 
     public function __construct(
         ExporterService $exporterService,
@@ -47,6 +48,7 @@ class Exporter extends Command {
             new InputOption(self::KEY_STOREIDS, null, InputOption::VALUE_REQUIRED, 'Comma separated store ids'),
             new InputOption(self::KEY_FILENAMES, null, InputOption::VALUE_OPTIONAL, 'Comma separate filenames that matches comma separated store ids'),
             new InputOption(self::KEY_RANGESTART, null, InputOption::VALUE_OPTIONAL, 'A date/time string. Valid formats are explained in Date and Time Formats'),
+            new InputOption(self::KEY_DELIMITER, null, InputOption::VALUE_OPTIONAL, 'Delimiter for the CSV file, defaults to comma'),
         ];
     }
 
@@ -66,7 +68,8 @@ class Exporter extends Command {
             $params = [
                 'storeIds' => $input->getOption(self::KEY_STOREIDS),
                 'filenames' => $input->getOption(self::KEY_FILENAMES),
-                'rangeStart' => $input->getOption(self::KEY_RANGE)
+                'rangeStart' => $input->getOption(self::KEY_RANGESTART),
+                'delimiter' => $input->getOption(self::KEY_DELIMITER),
             ];
 
             if (!$params['rangeStart']) {

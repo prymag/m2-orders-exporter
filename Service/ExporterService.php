@@ -68,7 +68,9 @@ class ExporterService {
             $dataArray = $this->_csvDataProvider->create($providerParams)->toArray();
             
             $filename = $this->makeFilename($filters, $filenames, $index);
-            $this->_csvWriterService->write($dataArray, $filename);
+            $this->_csvWriterService
+                ->setDelimiter($params['delimiter'])
+                ->write($dataArray, $filename);
 
             $result[] = [
                 'storeId' => $storeId,
@@ -86,7 +88,7 @@ class ExporterService {
         $rangeStart = !$rangeStart ? '-24 hours' : "-" . $rangeStart;
 
         $toDateTime = new \DateTime();
-
+        
         $fromDateTime = clone $toDateTime;
         $fromDateTime->modify($rangeStart);
 

@@ -6,6 +6,10 @@ trait PaymentTrait {
 
     protected $_order;
 
+    protected $_payment;
+
+    protected $_paymentMethod;
+
     public function getPaymentFee()
     {
         # code...
@@ -14,13 +18,55 @@ trait PaymentTrait {
         return 0;
     }
 
+    protected function getPayment() {
+        //
+        if (!$this->_payment) {
+            $this->_payment = $this->_order->getPayment();
+        }
+
+        return $this->_payment;
+    }
+
+    protected function getPaymentMethod() {
+        //
+        if (!$this->_paymentMethod) {
+            $this->_paymentMethod = $this->getPayment()->getMethod();
+        }
+
+        return $this->_paymentMethod;
+    }
+
     public function getWayOfPayment()
     {
-        # code...
-        return $this->_order
-            ->getPayment()
+        # code..
+        return $this->getPayment()
             ->getMethodInstance()
             ->getTitle();
+    }
+
+    public function getPaymentType()
+    {
+        # code...
+
+        return $this->getPayment()
+            ->getAdditionalInformation();
+    }
+
+    public function getPaymentServiceProvider()
+    {
+        # code...
+        $method = $this->getPaymentMethod();
+
+        switch ($method) {
+            case 'dibseasycheckout':
+                return 'dibs';
+            case 'klarna_kco':
+                return 'klarna';
+            case 'paypal':
+                return 'paypal';
+            default:
+                return $method;
+        }
     }
 
     public function getTermsOfPayment()

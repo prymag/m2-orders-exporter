@@ -36,8 +36,10 @@ class Fields {
         'Way of delivery',
         'Terms of delivery',
         'Terms of payment',
+        //'Payment Service Provider',
         'Article no',
         'Size',
+        'Color',
         'Qty',
     ];
 

@@ -13,6 +13,7 @@ class DataProvider {
     protected $_etmOrderFactory;
     protected $_fields;
     protected $_orderType;
+    protected $_productRepository;
 
     /**
      * Constructor
@@ -30,7 +31,8 @@ class DataProvider {
         $orderType,
         DateHelper $dateHelper,
         ETMORderFactory $etmOrderFactory,
-        OrderCollection $collection
+        OrderCollection $collection,
+        \Magento\Catalog\Model\ProductRepository $productRepository
     ) {
         # code...
         $this->_collection = $collection;
@@ -38,6 +40,8 @@ class DataProvider {
         $this->_etmOrderFactory = $etmOrderFactory;
         $this->_fields = $fields;
         $this->_orderType = $orderType;
+        
+        $this->_productRepository = $productRepository;
 
         return $this;
     }
@@ -103,7 +107,7 @@ class DataProvider {
             'orderType' => $this->_orderType
         ];
         $etmOrder = $this->_etmOrderFactory->create($params);
-        
+
         return [
             $etmOrder->getType(),
             $etmOrder->getFirstName(),
@@ -127,7 +131,7 @@ class DataProvider {
             $etmOrder->getCampaignCode(),
             $etmOrder->getSellerCompany(),
             $etmOrder->getIPNo(),
-            $this->_dateHelper->format($etmOrder->getOrderDate(), 'YYYY-mm-dd'),
+            $this->_dateHelper->format($etmOrder->getOrderDate(), 'Y-m-d'),
             $etmOrder->getOrderNumberExternal(),
             $etmOrder->getFreight(),
             $etmOrder->getPaymentFee(),
@@ -135,6 +139,7 @@ class DataProvider {
             $etmOrder->getWayOfDelivery(),
             $etmOrder->getTermsOfDelivery(),
             $etmOrder->getTermsOfPayment(),
+            //$etmOrder->getPaymentServiceProvider(),
             //$this->$dateHelper->format($etmOrder->getDeliveryDate()),
         ];
     }
@@ -153,10 +158,22 @@ class DataProvider {
         $allOrderItems = $order->getAllItems();
 
         foreach($allOrderItems as $orderItem) {
-            //
+            // 
             $item = [];
-            $item[] = $orderItem->getSku();
-            $item[] = $orderItem->getSize();
+            
+            /**
+             * @Todo maybe offload the loading of product info to another class
+             * 
+             * It is necessary to Load the product by ID 
+             * using the product repository
+             * The Product object from the order ($orderItem)
+             * does not seem to be able to retrieve custom attributes
+             */
+            $product = $this->_productRepository->getById($orderItem->getProductId());
+            
+            $item[] = $product->getArticlenumber();
+            $item[] = $product->getItemSize();
+            $item[] = $product->getItemColor();
             $item[] = $orderItem->getQtyOrdered();
 
             $orderItems[] = array_map([$this, 'encodeSpecialCharacters'], $item);

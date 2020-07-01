@@ -33,6 +33,21 @@ class CsvWriterService {
         return $exportDir;
     }
 
+    public function setDelimiter($delimiter)
+    {
+        # code...
+        if ($delimiter == '') {
+            return $this;
+        }
+
+        if ($delimiter == 'tab') {
+            $delimiter = "\t";
+        }
+        
+        $this->_csvProcessor->setDelimiter($delimiter);
+        return $this;
+    }
+
     function write($data, $filename = 'export'){
         //
         $exportDir = $this->getExportDir();
@@ -41,7 +56,6 @@ class CsvWriterService {
     
         $this->_csvProcessor
             ->setEnclosure('"')
-            ->setDelimiter("\t")
             ->saveData($filePath, $data);
     }
 
