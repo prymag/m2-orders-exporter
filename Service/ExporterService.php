@@ -58,27 +58,37 @@ class ExporterService {
         foreach($storeIds as $index => $storeId) {
             // 
             $filters['store_id'] = ['eq' => $storeId];
-            $orderCollection = $this->_orderList->getCollection($filters)->load();
-            
-            $providerParams = [
-                'collection' => $orderCollection,
-                'fields' => $this->_fields,
-                'orderType' => 'I'
-            ];
-            $dataArray = $this->_csvDataProvider->create($providerParams)->toArray();
+            $csvData = $this->getCSVData($filters);
             
             $filename = $this->makeFilename($filters, $filenames, $index);
+
             $this->_csvWriterService
                 ->setDelimiter($params['delimiter'])
-                ->write($dataArray, $filename);
+                ->write($csvData, $filename);
 
             $result[] = [
                 'storeId' => $storeId,
-                'total' => count($dataArray) - 1
+                'total' => count($csvData) - 1,
+                'filename' => $filename
             ];
         }
 
         return $result;
+    }
+
+    protected function getCSVData($filters)
+    {
+        # code...
+        $orderCollection = $this->_orderList->getCollection($filters)->load();
+        
+        $providerParams = [
+            'collection' => $orderCollection,
+            'fields' => $this->_fields,
+            'orderType' => 'I'
+        ];
+        $dataArray = $this->_csvDataProvider->create($providerParams)->toArray();
+        
+        return $dataArray;
     }
 
     protected function getOrderDateFilters($rangeStart)
@@ -97,8 +107,6 @@ class ExporterService {
         
         return ['created_at' => ['from' => $from, 'to' => $to]];
     }
-
-    
 
     protected function makeFilename($filters, $filenames, $index)
     {

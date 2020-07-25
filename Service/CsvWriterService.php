@@ -3,34 +3,24 @@
 namespace Prymag\OrdersExporter\Service;
 
 use \Magento\Framework\File\Csv;
-use \Magento\Framework\App\Filesystem\DirectoryList;
 use \Magento\Framework\Filesystem;
+
+use Prymag\OrdersExporter\Helpers\Directory;
 
 class CsvWriterService {
     //
     protected $_fileSystem;
-    protected $_directoryList;
+    protected $_directory;
     protected $_csvProcessor;
 
     public function __construct(
         Csv $csvProcessor,
-        DirectoryList $directoryList,
+        Directory $directory,
         Filesystem $filesystem
     ) {
         $this->_filesystem = $filesystem;  
-        $this->_directoryList = $directoryList;
+        $this->_directory = $directory;
         $this->_csvProcessor = $csvProcessor;
-    }
-
-    public function getExportDir()
-    {
-        # code...
-        $exportDir = $this->_directoryList->getPath(DirectoryList::VAR_DIR) . '/prymag_orders_exporter';
-
-        if(!is_dir($exportDir))
-            mkdir($exportDir, 0777, true);
-
-        return $exportDir;
     }
 
     public function setDelimiter($delimiter)
@@ -50,7 +40,7 @@ class CsvWriterService {
 
     function write($data, $filename = 'export'){
         //
-        $exportDir = $this->getExportDir();
+        $exportDir = $this->_directory->getExport();
         $fileName = "{$filename}.csv";
         $filePath =  $exportDir . '/' . $fileName;
     

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="prymagbase" translate="label" sortOrder="130">
+            <label>Prymag</label>
+        </tab>
+        <section id="Prymag_OrdersExporter" 
+            showInDefault="1"  
+            sortOrder="10" 
+            translate="label">
+            <label>Orders Exporter</label>
+            <tab>prymagbase</tab>
+            <resource>Prymag_Base::system_config</resource>
+
+            <group 
+                id="sendto_email" 
+                translate="label" 
+                type="text" 
+                sortOrder="1"
+                showInDefault="1" 
+                >
+                <label>Send To Email</label>
+                    
+                    <field id="enabled" translate="label" type="select" showInDefault="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+
+                    <field id="address" 
+                        translate="label" 
+                        sortOrder="10" 
+                        showInDefault="1" 
+                        type="text">
+                        <label>Email Adddress</label>
+                    </field>
+                    
+            </group>
+            <group 
+                id="sendto_ftp" 
+                translate="label" 
+                type="text" 
+                sortOrder="1"
+                showInDefault="1" 
+                >
+                <label>Send To FTP</label>
+                    
+                    <field id="enabled" translate="label" type="select" showInDefault="1">
+                        <label>Enabled</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+
+                    <field id="host" 
+                        translate="label" 
+                        sortOrder="10" 
+                        showInDefault="1" 
+                        type="text">
+                        <label>Host</label>
+                    </field>
+
+                    <field id="port" 
+                        translate="label" 
+                        sortOrder="10" 
+                        showInDefault="1" 
+                        type="text">
+                        <label>Port</label>
+                    </field>
+
+                    <field id="username" 
+                        translate="label" 
+                        sortOrder="10" 
+                        showInDefault="1" 
+                        type="text">
+                        <label>Username</label>
+                    </field>
+
+                    <field id="password" 
+                        translate="label" 
+                        sortOrder="10" 
+                        showInDefault="1" 
+                        type="password">
+                        <label>Password</label>
+                    </field>
+                    
+            </group>
+
+            
+        </section>
+    </system>
+</config>

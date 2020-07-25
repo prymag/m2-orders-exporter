@@ -3,16 +3,21 @@
 namespace Prymag\OrdersExporter\Console;
 
 use Prymag\OrdersExporter\Logger\Logger;
+use Prymag\OrdersExporter\Service\CsvSenderService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Prymag\OrdersExporter\Service\ExporterService;
+use Magento\Framework\App\Area;
+use Magento\Framework\App\State;
 
 class Exporter extends Command {
     //
+    protected $_csvSenderService;
     protected $_exporterService;
     protected $_logger;
+    protected $_state;
 
     const KEY_STOREIDS = 'store_ids';
     const KEY_FILENAMES = 'filenames';
@@ -20,12 +25,16 @@ class Exporter extends Command {
     const KEY_DELIMITER = 'delimiter';
 
     public function __construct(
+        CsvSenderService $csvSenderService,
         ExporterService $exporterService,
-        Logger $logger
+        Logger $logger,
+        State $state
     ) {
         # code...
+        $this->_csvSenderService = $csvSenderService;
         $this->_exporterService = $exporterService;
         $this->_logger = $logger;
+        $this->_state = $state;
 
         parent::__construct();
     }
@@ -62,7 +71,12 @@ class Exporter extends Command {
     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
         try {
+            // Set the code to backend
+            // ensure config will always pull the defaults when possible.
+            $this->_state->setAreaCode(Area::AREA_ADMINHTML);
+
             $this->_logger->info('Running exporter...');
 
             $params = [
@@ -83,6 +97,8 @@ class Exporter extends Command {
             }
 
             $results = $this->_exporterService->process($params);
+
+            //$this->_csvSenderService->send($results);
 
             foreach($results as $result) {
                 $this->_logger->info('Success', $result);
