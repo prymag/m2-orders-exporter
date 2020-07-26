@@ -69,7 +69,7 @@ class ExporterService {
             $result[] = [
                 'storeId' => $storeId,
                 'total' => count($csvData) - 1,
-                'filename' => $filename
+                'filename' => $filename . '.csv'
             ];
         }
 

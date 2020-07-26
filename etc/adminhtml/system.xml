@@ -32,23 +32,20 @@
                         showInDefault="1" 
                         type="text">
                         <label>Email Adddress</label>
-                    </field>
-                    
+                    </field>        
             </group>
-            <group 
+            <!-- <group 
                 id="sendto_ftp" 
                 translate="label" 
                 type="text" 
                 sortOrder="1"
                 showInDefault="1" 
                 >
-                <label>Send To FTP</label>
-                    
+                    <label>Send To FTP</label>
                     <field id="enabled" translate="label" type="select" showInDefault="1">
                         <label>Enabled</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     </field>
-
                     <field id="host" 
                         translate="label" 
                         sortOrder="10" 
@@ -64,7 +61,6 @@
                         type="text">
                         <label>Port</label>
                     </field>
-
                     <field id="username" 
                         translate="label" 
                         sortOrder="10" 
@@ -72,7 +68,6 @@
                         type="text">
                         <label>Username</label>
                     </field>
-
                     <field id="password" 
                         translate="label" 
                         sortOrder="10" 
@@ -80,10 +75,7 @@
                         type="password">
                         <label>Password</label>
                     </field>
-                    
-            </group>
-
-            
+            </group> -->
         </section>
     </system>
 </config>

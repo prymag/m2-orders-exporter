@@ -23,6 +23,7 @@ class Exporter extends Command {
     const KEY_FILENAMES = 'filenames';
     const KEY_RANGESTART = 'range_start';
     const KEY_DELIMITER = 'delimiter';
+    const KEY_STOPSEND = 'stop_send';
 
     public function __construct(
         CsvSenderService $csvSenderService,
@@ -58,6 +59,7 @@ class Exporter extends Command {
             new InputOption(self::KEY_FILENAMES, null, InputOption::VALUE_OPTIONAL, 'Comma separate filenames that matches comma separated store ids'),
             new InputOption(self::KEY_RANGESTART, null, InputOption::VALUE_OPTIONAL, 'A date/time string. Valid formats are explained in Date and Time Formats'),
             new InputOption(self::KEY_DELIMITER, null, InputOption::VALUE_OPTIONAL, 'Delimiter for the CSV file, defaults to comma'),
+            new InputOption(self::KEY_STOPSEND, null, InputOption::VALUE_OPTIONAL, 'Prevent sending of attachment'),
         ];
     }
 
@@ -98,11 +100,15 @@ class Exporter extends Command {
 
             $results = $this->_exporterService->process($params);
 
-            //$this->_csvSenderService->send($results);
-
             foreach($results as $result) {
                 $this->_logger->info('Success', $result);
                 $output->writeln("<info>Processed: {$result['total']} orders for Store ID: {$result['storeId']} </info>");
+            }
+
+            if ($input->getOption(self::KEY_STOPSEND) == '') {
+                $output->writeln('Sending to email...');
+                $this->_csvSenderService->send($results);
+                $output->writeln('Sending successful');
             }
 
         } catch (\Exception $e) {

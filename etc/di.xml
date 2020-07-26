@@ -26,4 +26,10 @@
             </argument>
         </arguments>
     </type>
+    <type name="Prymag\OrdersExporter\Mail\Template\TransportBuilder">
+        <arguments>
+            <argument name="message" xsi:type="object">Prymag\OrdersExporter\Mail\Message</argument>
+            <argument name="messageFactory" xsi:type="object">Prymag\OrdersExporter\Mail\MessageFactory</argument>
+        </arguments>
+    </type>
 </config>
