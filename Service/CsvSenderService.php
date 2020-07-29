@@ -7,12 +7,15 @@ use Prymag\OrdersExporter\Helpers\Config\SendToEmail;
 use Prymag\OrdersExporter\Helpers\Config\SendToFtp;
 use Prymag\OrdersExporter\Helpers\Directory;
 use Prymag\OrdersExporter\Helpers\Email;
+use Prymag\OrdersExporter\Helpers\Ftp;
 
 class CsvSenderService {
 
     protected $_directory;
     
     protected $_email;
+
+    protected $_ftp;
 
     protected $_sendToEmail;
 
@@ -21,6 +24,7 @@ class CsvSenderService {
     public function __construct(
         Directory $directory,
         Email $email,
+        Ftp $ftp,
         SendToEmail $sendToEmail,
         SendToFtp $sendToFtp
     )
@@ -28,6 +32,7 @@ class CsvSenderService {
         # code...
         $this->_directory = $directory;
         $this->_email = $email;
+        $this->_ftp = $ftp;
         $this->_sendToEmail = $sendToEmail;
         $this->_sendToFtp = $sendToFtp;
     }
@@ -37,7 +42,8 @@ class CsvSenderService {
         # code...
         $attachments = $this->getFiles($results);
 
-        $this->willSendToEmail($attachments);
+        //$this->willSendToEmail($attachments);
+        $this->willSendToFTP($attachments);
     }
 
     public function willSendToEmail($attachments)
@@ -48,6 +54,17 @@ class CsvSenderService {
         if ($enabled) {
             $address = $this->_sendToEmail->getAddress();
             $this->_email->send($address, $attachments);
+        }
+    }
+
+    public function willSendToFTP($attachments)
+    {
+        # code...
+        $enabled = $this->_sendToFtp->getEnabled();
+        
+        if ($enabled) {
+            $args = $this->_sendToFtp->getArgs();
+            $this->_ftp->send($attachments, $args);
         }
     }
 

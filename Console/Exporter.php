@@ -48,8 +48,6 @@ class Exporter extends Command {
         $this->setName('prymag:orders:exporter')
             ->setDescription('ETM Order Exporter')
             ->setDefinition($this->getOptionsList());
-
-        parent::configure();
     }
 
     protected function getOptionsList()
@@ -106,7 +104,7 @@ class Exporter extends Command {
             }
 
             if ($input->getOption(self::KEY_STOPSEND) == '') {
-                $output->writeln('Sending to email...');
+                $output->writeln('Sending attachments...');
                 $this->_csvSenderService->send($results);
                 $output->writeln('Sending successful');
             }

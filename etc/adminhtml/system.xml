@@ -34,7 +34,7 @@
                         <label>Email Adddress</label>
                     </field>        
             </group>
-            <!-- <group 
+            <group 
                 id="sendto_ftp" 
                 translate="label" 
                 type="text" 
@@ -75,7 +75,7 @@
                         type="password">
                         <label>Password</label>
                     </field>
-            </group> -->
+            </group>
         </section>
     </system>
 </config>

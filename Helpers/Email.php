@@ -38,31 +38,24 @@ class Email extends AbstractHelper
 
     public function send($toEmail, $attachments = [])
     {
-        
-        try {
-            $transportBuilder = $this->getTransportBuilder();
-            $transportBuilder->addTo($toEmail);
+        $transportBuilder = $this->getTransportBuilder();
+        $transportBuilder->addTo($toEmail);
 
-            if (count($attachments)) {
-                foreach ($attachments as $attachment) {
-                    $transportBuilder->addAttachment(
-                        $this->_file->fileGetContents($attachment['full_path']),
-                        $attachment['filename'],
-                        $attachment['type']
-                    );
-                }
+        if (count($attachments)) {
+            foreach ($attachments as $attachment) {
+                $transportBuilder->addAttachment(
+                    $this->_file->fileGetContents($attachment['full_path']),
+                    $attachment['filename'],
+                    $attachment['type']
+                );
             }
-
-            $transport = $transportBuilder->getTransport();
-
-            $transport->sendMessage();
-
-            $this->_inlineTranslation->resume();
-        } catch (\Exception $e) {
-            print_r($e->getMessage());
-            print_r($e->getTraceAsString());
-            $this->_logger->info($e->getMessage());
         }
+
+        $transport = $transportBuilder->getTransport();
+
+        $transport->sendMessage();
+
+        $this->_inlineTranslation->resume();
     }
 
     protected function getTransportBuilder()

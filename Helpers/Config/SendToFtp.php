@@ -58,4 +58,15 @@ class SendToFtp extends \Magento\Framework\App\Helper\AbstractHelper {
         );
     }
 
+    public function getArgs()
+    {
+        # code...
+        return [
+            'host' => $this->getHost(),
+            'port' => $this->getPort(),
+            'user' => $this->getUsername(),
+            'password' => $this->getPassword(),
+        ];
+    }
+
 }
