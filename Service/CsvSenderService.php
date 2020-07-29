@@ -42,7 +42,7 @@ class CsvSenderService {
         # code...
         $attachments = $this->getFiles($results);
 
-        //$this->willSendToEmail($attachments);
+        $this->willSendToEmail($attachments);
         $this->willSendToFTP($attachments);
     }
 
@@ -52,7 +52,13 @@ class CsvSenderService {
         $enabled = $this->_sendToEmail->getEnabled();
 
         if ($enabled) {
+            //
             $address = $this->_sendToEmail->getAddress();
+            
+            // Don't send if empty
+            if ($address == '') {
+                return;
+            }
             $this->_email->send($address, $attachments);
         }
     }

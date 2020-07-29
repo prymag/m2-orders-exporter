@@ -4,9 +4,23 @@
  */
 namespace Prymag\OrdersExporter\Helpers\Config;
 
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Encryption\EncryptorInterface;
+
 class SendToFtp extends \Magento\Framework\App\Helper\AbstractHelper {
 
     const XML_PATH = 'Prymag_OrdersExporter/sendto_ftp/';
+
+    protected $_encryptor;
+
+    public function __construct(
+        Context $context,
+        EncryptorInterface $encryptor
+    )
+    {
+        $this->_encryptor = $encryptor;
+        parent::__construct($context);
+    }
 
     public function getEnabled($store = null)
     {
@@ -51,11 +65,13 @@ class SendToFtp extends \Magento\Framework\App\Helper\AbstractHelper {
     public function getPassword($store = null)
     {
         # code...
-        return $this->scopeConfig->getValue(
+        $password = $this->scopeConfig->getValue(
             self::XML_PATH . 'password',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
+
+        return $this->_encryptor->decrypt($password);
     }
 
     public function getArgs()
