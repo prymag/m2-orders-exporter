@@ -82,6 +82,7 @@ class SendToFtp extends \Magento\Framework\App\Helper\AbstractHelper {
             'port' => $this->getPort(),
             'user' => $this->getUsername(),
             'password' => $this->getPassword(),
+            'passive' => 1
         ];
     }
 
