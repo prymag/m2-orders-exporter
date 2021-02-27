@@ -59,6 +59,10 @@ class ExporterService {
             // 
             $filters['store_id'] = ['eq' => $storeId];
             $csvData = $this->getCSVData($filters);
+
+            if (!$csvData) {
+                continue;
+            }
             
             $filename = $this->makeFilename($filters, $filenames, $index);
 
@@ -78,8 +82,11 @@ class ExporterService {
 
     protected function getCSVData($filters)
     {
-        # code...
         $orderCollection = $this->_orderList->getCollection($filters)->load();
+
+        if (!$orderCollection->getSize()) {
+            return;
+        }
         
         $providerParams = [
             'collection' => $orderCollection,
